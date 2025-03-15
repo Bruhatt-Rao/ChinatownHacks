@@ -3,28 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %} - Flask App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>{% block title %}{% endblock %} - MOSO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            border-bottom: 3px solid #000;
+            padding: 1rem 0;
+            position: relative;
+            width: 100%;
+        }
+        .navbar::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: -100vw;
+            right: -100vw;
+            height: 3px;
+            background-color: black;
+            z-index: 1000;
+        }
+        .main-content {
+            border-top: 1px solid #000;
+            padding-top: 2rem;
+            position: relative;
+        }
+        .nav-link {
+            color: rgb(57,133,100) !important;
+            text-decoration: none !important;
+            margin-left: 2rem !important;
+            font-weight: 500;
+        }
+        .navbar-brand {
+            color: black !important;
+            font-weight: bold;
+        }
+        .navbar-nav {
+            gap: 1.5rem;
+        }
+        .main-title {
+            font-size: 3.5rem;
+            margin: 4rem 0 2rem 0;
+            font-weight: bold;
+        }
+        .main-title span {
+            display: block;
+        }
+        .section-divider {
+            position: absolute;
+            width: 300vw;
+            height: 3px;
+            background-color: black;
+            margin: 3rem 0;
+            left: -100vw;
+            z-index: 1000;
+        }
+        .section-divider-container {
+            position: relative;
+            width: 100%;
+            height: 3px;
+            margin: 3rem 0;
+        }
+        body {
+            background-image: url('static/images/bamboo-bg.png');
+            background-repeat: no-repeat;
+            background-position: right;
+            background-size: contain;
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+        .content-container {
+            position: relative;
+            z-index: 1;
+        }
+        .main-content h1,
+        .main-content p,
+        .main-content .btn {
+            text-align: left;
+        }
+        .btn-see-more {
+            margin-bottom: 2rem;
+        }
+        .bamboo-decoration {
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            width: auto;
+            z-index: -1;
+            clip-path: inset(53px 0 53px 0); /* Adjusts to your line thickness */
+            opacity: 0.8; /* Makes it slightly transparent */
+        }
+        
+        .content-wrapper {
+            position: relative;
+            overflow-x: hidden;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container nav-content">
-            <a href="{{ url_for('home') }}" style="text-decoration: none; color: var(--text-color);">
-                <h1>Flask App</h1>
-            </a>
-            <div class="nav-links">
-                <a href="{{ url_for('home') }}">Home</a>
-                {% if current_user.is_authenticated %}
-                <a href="{{ url_for('logout') }}">Logout</a>
-                {% else %}
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('signup') }}">Sign Up</a>
-                {% endif %}
+    <nav class="navbar navbar-expand-lg bg-white">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">MOSO</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
+                    </li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="content-wrapper">
+        <img src="{{ url_for('static', filename='images/bamboo.png') }}" class="bamboo-decoration" alt="Bamboo decoration">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="flash-messages">
