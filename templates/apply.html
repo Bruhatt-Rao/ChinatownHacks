@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Apply{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="auth-card">
+                <h2 class="text-center mb-4">Business Application</h2>
+                <form method="POST" class="application-form">
+                    <!-- Business Information -->
+                    <div class="section-title">Basic Information</div>
+                    <div class="form-group mb-3">
+                        <label for="business_name" class="form-label">Business Name*</label>
+                        <input type="text" class="form-control form-control-lg" id="business_name" name="business_name" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="years_in_business" class="form-label">Years in Business*</label>
+                        <input type="number" class="form-control form-control-lg" id="years_in_business" name="years_in_business" required>
+                    </div>
+
+                    <!-- Financial Information -->
+                    <div class="section-title">Financial Information</div>
+                    <div class="form-group mb-3">
+                        <label for="revenue_3years" class="form-label">Annual Revenue (3 Years Ago)*</label>
+                        <input type="number" class="form-control form-control-lg" id="revenue_3years" name="revenue_3years" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="revenue_2years" class="form-label">Annual Revenue (2 Years Ago)*</label>
+                        <input type="number" class="form-control form-control-lg" id="revenue_2years" name="revenue_2years" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="revenue_lastyear" class="form-label">Annual Revenue (Last Year)*</label>
+                        <input type="number" class="form-control form-control-lg" id="revenue_lastyear" name="revenue_lastyear" required>
+                    </div>
+
+                    <!-- Market Presence -->
+                    <div class="section-title">Market Presence</div>
+                    <div class="form-group mb-3">
+                        <label for="review_rating" class="form-label">Review Rating (out of 5)*</label>
+                        <input type="number" step="0.1" min="0" max="5" class="form-control form-control-lg" id="review_rating" name="review_rating" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="review_count" class="form-label">Number of Reviews*</label>
+                        <input type="number" class="form-control form-control-lg" id="review_count" name="review_count" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="social_media" class="form-label">Social Media Presence (Followers)*</label>
+                        <input type="number" class="form-control form-control-lg" id="social_media" name="social_media" required>
+                    </div>
+
+                    <!-- Market Analysis -->
+                    <div class="section-title">Market Analysis</div>
+                    <div class="form-group mb-3">
+                        <label for="competitor_density" class="form-label">Competitor Density (within 1 mile)*</label>
+                        <input type="number" class="form-control form-control-lg" id="competitor_density" name="competitor_density" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="lease_price" class="form-label">Monthly Lease Price ($)*</label>
+                        <input type="number" class="form-control form-control-lg" id="lease_price" name="lease_price" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="market_demand" class="form-label">Market Demand Estimate (1-10)*</label>
+                        <input type="number" min="1" max="10" class="form-control form-control-lg" id="market_demand" name="market_demand" required>
+                    </div>
+
+                    <!-- Expansion Status -->
+                    <div class="form-group mb-4">
+                        <label for="expansion_status" class="form-label">Expansion Status*</label>
+                        <select class="form-select form-select-lg" id="expansion_status" name="expansion_status" required>
+                            <option value="">Select status...</option>
+                            <option value="planning">Planning Phase</option>
+                            <option value="ready">Ready to Expand</option>
+                            <option value="in_progress">Expansion in Progress</option>
+                            <option value="multiple">Multiple Locations</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-dark btn-lg">Submit Application</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid #ddd;
+    }
+
+    .auth-card h2 {
+        font-size: 2.2rem;
+        font-weight: 600;
+        color: #333;
+        font-family: 'Roboto Mono', monospace;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin: 2rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #eee;
+        font-family: 'Roboto Mono', monospace;
+    }
+
+    .form-label {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #555;
+        font-family: 'Roboto Mono', monospace;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #ddd;
+        padding: 0.8rem;
+        font-size: 1.1rem;
+        font-family: 'Roboto Mono', monospace;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #333;
+        box-shadow: none;
+    }
+
+    .btn-dark {
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-family: 'Roboto Mono', monospace;
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %} 

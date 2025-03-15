@@ -3,10 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+import secrets
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SECRET_KEY'] = secrets.token_hex(16)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -79,11 +82,35 @@ def logout():
 def gallery():
     return render_template('gallery.html')
 
-@app.route('/businesses')
-def businesses():
+@app.route('/restaurants')
+def restaurants():
+    if not current_user.is_authenticated:
+        flash('Please sign up to view restaurants')
+        return redirect(url_for('signup'))
     return render_template('businesses.html')
+
+@app.route('/apply', methods=['GET', 'POST'])
+def apply():
+    if not current_user.is_authenticated:
+        flash('Please sign up to submit an application')
+        return redirect(url_for('signup'))
+    return render_template('apply.html')
+
+@app.route('/apply_restaurant', methods=['GET', 'POST'])
+def apply_restaurant():
+    return render_template('apply_now.html')
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        
+        if not User.query.first():
+            default_user = User(
+                username="admin",
+                email="admin@example.com",
+                password_hash=generate_password_hash("password123")
+            )
+            db.session.add(default_user)
+            db.session.commit()
+            
     app.run(debug=True, port=8080) 
