@@ -79,7 +79,11 @@ def logout():
 def gallery():
     return render_template('gallery.html')
 
+@app.route('/businesses')
+def businesses():
+    return render_template('businesses.html')
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True) 
+    app.run(debug=True, port=8080) 

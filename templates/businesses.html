@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Find Business{% endblock %}
+
+{% block content %}
+<div class="container main-content">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h2 class="mb-4">Business Investment Opportunities</h2>
+            
+            {% for business in [
+                {
+                    'name': 'Golden Dragon Restaurant',
+                    'years': 35,
+                    'rating': 4.7,
+                    'social_followers': '12.3K',
+                    'monthly_revenue': '$45,000',
+                    'equity': 15,
+                    'price_range': '$$',
+                    'location': 'Grant Avenue',
+                    'description': 'Third-generation family restaurant seeking investment to modernize kitchen equipment and expand dining space. Known for authentic dim sum and Peking duck. Strong local following and growing tourist customer base.',
+                    'metrics': {
+                        'Monthly Customers': '2,800+',
+                        'Yelp Reviews': '850+',
+                        'Return Rate': '68%',
+                        'Profit Margin': '22%'
+                    }
+                },
+                {
+                    'name': 'Jade Palace Seafood',
+                    'years': 28,
+                    'rating': 4.5,
+                    'social_followers': '8.5K',
+                    'monthly_revenue': '$38,000',
+                    'equity': 20,
+                    'price_range': '$$$',
+                    'location': 'Powell Street',
+                    'description': 'Award-winning seafood restaurant looking to launch delivery service and mobile app. Specialized in live seafood and traditional Cantonese cuisine. Featured in SF Chronicle.',
+                    'metrics': {
+                        'Monthly Customers': '2,100+',
+                        'Yelp Reviews': '620+',
+                        'Return Rate': '72%',
+                        'Profit Margin': '25%'
+                    }
+                },
+                {
+                    'name': 'Lucky Dim Sum House',
+                    'years': 42,
+                    'rating': 4.8,
+                    'social_followers': '15.2K',
+                    'monthly_revenue': '$52,000',
+                    'equity': 10,
+                    'price_range': '$',
+                    'location': 'Stockton Street',
+                    'description': 'Oldest dim sum restaurant in the district seeking partnership for expansion. Planning to open second location. Featured on Food Network. Known for affordable prices and authentic taste.',
+                    'metrics': {
+                        'Monthly Customers': '3,500+',
+                        'Yelp Reviews': '1,200+',
+                        'Return Rate': '75%',
+                        'Profit Margin': '18%'
+                    }
+                },
+                {
+                    'name': 'Imperial Tea Court',
+                    'years': 15,
+                    'rating': 4.6,
+                    'social_followers': '20.1K',
+                    'monthly_revenue': '$35,000',
+                    'equity': 10,
+                    'price_range': '$$',
+                    'location': 'Clay Street',
+                    'description': 'Contemporary tea house and dim sum cafe seeking investment for equipment upgrade and menu expansion. Popular among young professionals. Strong social media presence with viral TikTok content.',
+                    'metrics': {
+                        'Monthly Customers': '1,900+',
+                        'Yelp Reviews': '450+',
+                        'Return Rate': '65%',
+                        'Profit Margin': '28%'
+                    }
+                },
+                {
+                    'name': 'Dragon Noodle House',
+                    'years': 25,
+                    'rating': 4.4,
+                    'social_followers': '5.8K',
+                    'monthly_revenue': '$28,000',
+                    'equity': 5,
+                    'price_range': '$',
+                    'location': 'Jackson Street',
+                    'description': 'Family-owned noodle house looking to modernize and expand kitchen. Known for hand-pulled noodles and dumplings. Strong delivery business during pandemic.',
+                    'metrics': {
+                        'Monthly Customers': '2,400+',
+                        'Yelp Reviews': '380+',
+                        'Return Rate': '70%',
+                        'Profit Margin': '20%'
+                    }
+                }
+            ] %}
+            <div class="card mb-4 business-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h3 class="mb-1">{{ business.name }}</h3>
+                            <span class="badge bg-success me-2">{{ business.years }} Years</span>
+                            <span class="badge bg-primary me-2">{{ business.rating }} ★</span>
+                            <span class="badge bg-info">{{ business.price_range }}</span>
+                        </div>
+                        <div class="text-end">
+                            <h4 class="text-primary mb-1">Offering: {{ business.equity }}% Equity</h4>
+                            <small class="text-muted">Monthly Revenue: {{ business.monthly_revenue }}</small>
+                        </div>
+                    </div>
+
+                    <p class="card-text">{{ business.description }}</p>
+
+                    <div class="row mb-3">
+                        {% for metric, value in business.metrics.items() %}
+                        <div class="col-md-3 col-6 mb-2">
+                            <div class="p-2 border rounded text-center">
+                                <small class="d-block text-muted">{{ metric }}</small>
+                                <strong>{{ value }}</strong>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-map-marker-alt text-danger"></i>
+                            <small class="ms-1">{{ business.location }}</small>
+                            <span class="mx-2">|</span>
+                            <i class="fas fa-users text-primary"></i>
+                            <small class="ms-1">{{ business.social_followers }} followers</small>
+                        </div>
+                        <button class="btn btn-primary">Contact Business</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Add Font Awesome for icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+<style>
+    .business-card {
+        transition: transform 0.2s;
+        border-left: 5px solid #28a745;
+    }
+    .business-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .badge {
+        font-weight: 500;
+    }
+    .text-primary {
+        color: rgb(57,133,100) !important;
+    }
+    .btn-primary {
+        background-color: rgb(57,133,100);
+        border-color: rgb(57,133,100);
+    }
+    .btn-primary:hover {
+        background-color: rgb(45,106,80);
+        border-color: rgb(45,106,80);
+    }
+</style>
+{% endblock %} 
