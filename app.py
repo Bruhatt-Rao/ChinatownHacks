@@ -4,7 +4,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import secrets
 import classifier.run as run
-from twelvelabs import TwelveLabs
 import requests
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -23,7 +22,6 @@ db = Database("postgresql://neondb_owner:npg_UkJXC78uynDd@ep-rapid-glitter-a5o75
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-TWELVELABS_API_KEY = os.getenv('TWELVELABS_API_KEY')
 GOOGLE_PLACES_API_KEY = os.getenv('GOOGLE_PLACES_API_KEY')
 
 # Create uploads directory if it doesn't exist
