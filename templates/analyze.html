@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Restaurant Analyzer</h2>
+                </div>
+                <div class="card-body">
+                    <div class="upload-section text-center">
+                        <div class="upload-area p-4 border rounded mb-4" id="dropZone">
+                            <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                            <p>Drag and drop your image/video here or click to select</p>
+                            <p class="text-muted small">Supported formats: PNG, JPG, JPEG, MP4, MOV, AVI</p>
+                            <input type="file" id="fileInput" class="d-none" accept=".png,.jpg,.jpeg,.mp4,.mov,.avi">
+                        </div>
+                        <button id="analyzeBtn" class="btn btn-primary btn-lg" disabled>
+                            <i class="fas fa-search me-2"></i>Find Restaurant
+                        </button>
+                    </div>
+                    
+                    <div id="loadingSpinner" class="text-center d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Analyzing your media...</p>
+                    </div>
+
+                    <div id="errorAlert" class="alert alert-danger d-none" role="alert"></div>
+
+                    <div id="resultSection" class="mt-4 d-none">
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 id="restaurantName" class="card-title"></h3>
+                                <p id="restaurantAddress" class="card-text"></p>
+                                <div id="restaurantRating" class="mb-2"></div>
+                                <div id="restaurantContact" class="mb-2"></div>
+                                <div id="restaurantHours" class="mb-2"></div>
+                                <div id="restaurantPrice" class="mb-2"></div>
+                                <div id="restaurantPhotos" class="row mt-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const resultSection = document.getElementById('resultSection');
+    const errorAlert = document.getElementById('errorAlert');
+
+    const MAX_FILE_SIZE = 64 * 1024 * 1024; // 64MB in bytes
+
+    function showError(message) {
+        errorAlert.textContent = message;
+        errorAlert.classList.remove('d-none');
+        setTimeout(() => {
+            errorAlert.classList.add('d-none');
+        }, 5000);
+    }
+
+    function resetUI() {
+        resultSection.classList.add('d-none');
+        errorAlert.classList.add('d-none');
+        loadingSpinner.classList.add('d-none');
+        analyzeBtn.disabled = false;
+    }
+
+    function checkFileSize(file) {
+        if (file.size > MAX_FILE_SIZE) {
+            showError(`File size (${(file.size / (1024 * 1024)).toFixed(2)}MB) exceeds the maximum limit of 64MB`);
+            return false;
+        }
+        return true;
+    }
+
+    // Handle drag and drop
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-primary');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('border-primary');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-primary');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFile(files[0]);
+        }
+    });
+
+    dropZone.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+        }
+    });
+
+    function handleFile(file) {
+        if (!file) return;
+        
+        if (!checkFileSize(file)) {
+            fileInput.value = '';
+            analyzeBtn.disabled = true;
+            return;
+        }
+
+        if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
+            analyzeBtn.disabled = false;
+            dropZone.innerHTML = `
+                <p>Selected: ${file.name}</p>
+                <p class="text-muted small">Size: ${(file.size / (1024 * 1024)).toFixed(2)}MB</p>
+            `;
+        }
+    }
+
+    analyzeBtn.addEventListener('click', async () => {
+        const file = fileInput.files[0];
+        if (!file || !checkFileSize(file)) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        loadingSpinner.classList.remove('d-none');
+        analyzeBtn.disabled = true;
+        errorAlert.classList.add('d-none');
+        resultSection.classList.add('d-none');
+
+        try {
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            let data;
+            const contentType = response.headers.get('content-type');
+            
+            if (contentType && contentType.includes('application/json')) {
+                data = await response.json();
+            } else {
+                console.error('Non-JSON response:', await response.text());
+                throw new Error('Server returned invalid response format');
+            }
+
+            if (!response.ok) {
+                throw new Error(data.error || 'An error occurred during analysis');
+            }
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            displayResults(data);
+        } catch (error) {
+            console.error('Error:', error);
+            showError(error.message || 'An error occurred during analysis');
+        } finally {
+            loadingSpinner.classList.add('d-none');
+            analyzeBtn.disabled = false;
+        }
+    });
+
+    function displayResults(data) {
+        const resultSection = document.getElementById('resultSection');
+        const result = data.restaurant_info.result;
+        
+        let resultHtml = `
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h3 class="card-title">${result.name}</h3>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-map-marker-alt me-2"></i>${result.formatted_address}
+                            </p>
+                        </div>
+                        <div class="text-end">
+                            <div class="badge bg-primary mb-2">
+                                Match Confidence: ${Math.round(data.analysis_confidence * 100)}%
+                            </div>
+                            ${data.applied_status ? 
+                                `<div class="badge bg-success d-block">M0S0 Member</div>` : 
+                                `<div class="badge bg-secondary d-block">Not Registered</div>`
+                            }
+                            ${data.membership_status ? 
+                                `<div class="badge bg-warning text-dark mt-1">${data.membership_status}</div>` : 
+                                ''
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h5 class="mb-2">Rating & Reviews</h5>
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="h4 mb-0 me-2">${result.rating}</span>
+                                    <div class="stars">
+                                        ${generateStars(result.rating)}
+                                    </div>
+                                    <span class="ms-2 text-muted">(${result.user_ratings_total} reviews)</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <h5 class="mb-2">Contact Information</h5>
+                                ${result.formatted_phone_number ? 
+                                    `<p class="mb-1"><i class="fas fa-phone me-2"></i>${result.formatted_phone_number}</p>` : 
+                                    ''
+                                }
+                                ${result.website ? 
+                                    `<p class="mb-1"><i class="fas fa-globe me-2"></i><a href="${result.website}" target="_blank">Website</a></p>` : 
+                                    ''
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h5 class="mb-2">Business Hours</h5>
+                                ${result.opening_hours ? 
+                                    `<div class="small">
+                                        ${result.opening_hours.open_now ? 
+                                            '<p class="text-success mb-2"><i class="fas fa-clock me-2"></i>Open Now</p>' : 
+                                            '<p class="text-danger mb-2"><i class="fas fa-clock me-2"></i>Closed</p>'
+                                        }
+                                        ${result.opening_hours.weekday_text ? 
+                                            `<div class="hours-list">
+                                                ${result.opening_hours.weekday_text.map(day => 
+                                                    `<p class="mb-1">${day}</p>`
+                                                ).join('')}
+                                            </div>` : 
+                                            ''
+                                        }
+                                    </div>` : 
+                                    '<p class="text-muted">Hours not available</p>'
+                                }
+                            </div>
+
+                            <div class="mb-3">
+                                <h5 class="mb-2">Price Level</h5>
+                                <p>${'$'.repeat(result.price_level || 0)} <span class="text-muted">${getPriceLabel(result.price_level)}</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${result.reviews ? `
+                        <div class="mt-4">
+                            <h5 class="mb-3">Recent Reviews</h5>
+                            <div class="reviews-container">
+                                ${result.reviews.map(review => `
+                                    <div class="review-item border-bottom pb-3 mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <strong>${review.author_name}</strong>
+                                            <span class="text-muted small">${review.relative_time_description}</span>
+                                        </div>
+                                        <div class="stars mb-2">${generateStars(review.rating)}</div>
+                                        <p class="mb-0">${review.text}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+
+        resultSection.innerHTML = resultHtml;
+        resultSection.classList.remove('d-none');
+    }
+
+    function getPriceLabel(level) {
+        const labels = {
+            1: 'Inexpensive',
+            2: 'Moderate',
+            3: 'Expensive',
+            4: 'Very Expensive'
+        };
+        return labels[level] || 'Price not available';
+    }
+
+    function generateStars(rating) {
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+        let starsHtml = '';
+
+        for (let i = 0; i < fullStars; i++) {
+            starsHtml += '<i class="fas fa-star text-warning"></i>';
+        }
+        if (hasHalfStar) {
+            starsHtml += '<i class="fas fa-star-half-alt text-warning"></i>';
+        }
+        const emptyStars = 5 - Math.ceil(rating);
+        for (let i = 0; i < emptyStars; i++) {
+            starsHtml += '<i class="far fa-star text-warning"></i>';
+        }
+
+        return starsHtml;
+    }
+});
+</script>
+
+<style>
+.hours-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.review-item:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.stars {
+    color: #ffc107;
+}
+
+.badge {
+    font-weight: 500;
+}
+</style>
+{% endblock %} 
