@@ -175,40 +175,40 @@ def analyze():
     if request.method == 'GET':
         return render_template('analyze.html')
     
-    try:
-        if 'file' not in request.files:
-            return jsonify({'error': 'No file uploaded'}), 400
+    # try:
+    #     if 'file' not in request.files:
+    #         return jsonify({'error': 'No file uploaded'}), 400
         
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify({'error': 'No file selected'}), 400
+    #     file = request.files['file']
+    #     if file.filename == '':
+    #         return jsonify({'error': 'No file selected'}), 400
             
-        if not allowed_file(file.filename):
-            return jsonify({'error': 'File type not allowed'}), 400
+    #     if not allowed_file(file.filename):
+    #         return jsonify({'error': 'File type not allowed'}), 400
 
-        try:
+        # try:
             # Create a unique filename to avoid conflicts
-            filename = secure_filename(file.filename)
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
-            unique_filename = timestamp + filename
+            # filename = secure_filename(file.filename)
+            # timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
+            # unique_filename = timestamp + filename
             
-            # Ensure the full path to the file
-            temp_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            # # Ensure the full path to the file
+            # temp_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
             
-            # Debug print
-            print(f"Saving file to: {temp_path}")
+            # # Debug print
+            # print(f"Saving file to: {temp_path}")
             
-            # Make sure the directory exists
-            os.makedirs(os.path.dirname(temp_path), exist_ok=True)
+            # # Make sure the directory exists
+            # os.makedirs(os.path.dirname(temp_path), exist_ok=True)
             
-            # Save the file
-            file.save(temp_path)
+            # # Save the file
+            # file.save(temp_path)
             
-            if not os.path.exists(temp_path):
-                raise Exception(f"File failed to save at {temp_path}")
+            # if not os.path.exists(temp_path):
+            #     raise Exception(f"File failed to save at {temp_path}")
 
             # Return test data for now
-            test_data = {
+    test_data = {
                 'identified_name': 'Golden Palace Restaurant',
                 'has_info': True,
                 'restaurant_info': {
@@ -257,34 +257,34 @@ def analyze():
                 'analysis_confidence': 0.92,
                 'applied_status': True,  # Indicating if they've applied to the platform
                 'membership_status': 'Gold Member'  # Optional membership status
-            }
+    }
             
-            return jsonify(test_data)
+    return jsonify(test_data)
 
-        except Exception as e:
-            print(f"Error processing file: {str(e)}")  # Debug print
-            return jsonify({
-                'error': f'Error processing file: {str(e)}',
-                'identified_name': None,
-                'has_info': False
-            }), 500
+    #     except Exception as e:
+    #         print(f"Error processing file: {str(e)}")  # Debug print
+    #         return jsonify({
+    #             'error': f'Error processing file: {str(e)}',
+    #             'identified_name': None,
+    #             'has_info': False
+    #         }), 500
             
-        finally:
-            # Clean up temporary file
-            try:
-                if os.path.exists(temp_path):
-                    os.remove(temp_path)
-                    print(f"Cleaned up file: {temp_path}")  # Debug print
-            except Exception as e:
-                print(f"Error cleaning up file: {str(e)}")  # Debug print
+    #     finally:
+    #         # Clean up temporary file
+    #         try:
+    #             if os.path.exists(temp_path):
+    #                 os.remove(temp_path)
+    #                 print(f"Cleaned up file: {temp_path}")  # Debug print
+    #         except Exception as e:
+    #             print(f"Error cleaning up file: {str(e)}")  # Debug print
 
-    except Exception as e:
-        print(f"Server error: {str(e)}")  # Debug print
-        return jsonify({
-            'error': f'Server error: {str(e)}',
-            'identified_name': None,
-            'has_info': False
-        }), 500
+    # except Exception as e:
+    #     print(f"Server error: {str(e)}")  # Debug print
+    #     return jsonify({
+    #         'error': f'Server error: {str(e)}',
+    #         'identified_name': None,
+    #         'has_info': False
+    #     }), 500
 
 @app.after_request
 def after_request(response):
