@@ -3,140 +3,144 @@
 {% block title %}Apply Now{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="application-card">
-                <h2 class="text-center mb-4">Restaurant Application</h2>
-                <p class="text-center mb-4">Submit your restaurant information to join M0S0's accelerator program</p>
-                
-                <form method="POST" class="application-form" action="/applied">
-                    <!-- Basic Information -->
-                    <div class="section-title">
-                        <span class="section-number">1</span>
-                        Basic Information
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="restaurant_name" class="form-label">Restaurant Name*</label>
-                        <input type="text" class="form-control" id="restaurant_name" name="restaurant_name" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="years_in_operation" class="form-label">Years in Operation*</label>
-                        <input type="number" class="form-control" id="years_in_operation" name="Years in Business" min="0" required>
-                    </div>
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Restaurant Application</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-center mb-4">Submit your restaurant information to join M0S0's accelerator program</p>
+                    
+                    <form method="POST" action="{{ url_for('applied') }}" class="application-form">
+                        <!-- Basic Information -->
+                        <div class="section-title">
+                            <span class="section-number">1</span>
+                            Basic Information
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="restaurant_name" class="form-label">Restaurant Name*</label>
+                            <input type="text" class="form-control" id="restaurant_name" name="restaurant_name" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="years_in_operation" class="form-label">Years in Operation*</label>
+                            <input type="number" class="form-control" id="years_in_operation" name="Years in Business" min="0" required>
+                        </div>
 
-                    <!-- Financial Information -->
-                    <div class="section-title">
-                        <span class="section-number">2</span>
-                        Financial Information
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group mb-3">
-                                <label for="revenue_3years" class="form-label">Annual Revenue (3 Years Ago)*</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" id="revenue_3years" name="Annual Revenue (3 Years Ago)" required>
+                        <!-- Financial Information -->
+                        <div class="section-title">
+                            <span class="section-number">2</span>
+                            Financial Information
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="revenue_3years" class="form-label">Annual Revenue (3 Years Ago)*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="revenue_3years" name="Annual Revenue (3 Years Ago)" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="revenue_2years" class="form-label">Annual Revenue (2 Years Ago)*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="revenue_2years" name="Annual Revenue (2 Years Ago)" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="revenue_lastyear" class="form-label">Annual Revenue (Last Year)*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="revenue_lastyear" name="Annual Revenue (Last Year)" required>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group mb-3">
-                                <label for="revenue_2years" class="form-label">Annual Revenue (2 Years Ago)*</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" id="revenue_2years" name="Annual Revenue (2 Years Ago)" required>
+
+                        <!-- Market Presence -->
+                        <div class="section-title">
+                            <span class="section-number">3</span>
+                            Market Presence
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="review_rating" class="form-label">Review Rating*</label>
+                                    <input type="number" step="0.1" min="0" max="5" class="form-control" id="review_rating" name="Review Rating" required>
+                                    <small class="form-text text-muted">Out of 5 stars</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="review_count" class="form-label">Number of Reviews*</label>
+                                    <input type="number" class="form-control" id="review_count" name="Number of Reviews" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="social_media" class="form-label">Social Media Followers*</label>
+                                    <input type="number" class="form-control" id="social_media" name="Social Media Followers" min="0" required>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group mb-3">
-                                <label for="revenue_lastyear" class="form-label">Annual Revenue (Last Year)*</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" id="revenue_lastyear" name="Annual Revenue (Last Year)" required>
+
+                        <!-- Market Analysis -->
+                        <div class="section-title">
+                            <span class="section-number">4</span>
+                            Market Analysis
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="competitor_density" class="form-label">Competitor Density*</label>
+                                    <input type="number" class="form-control" id="competitor_density" name="Competitor Density" min="0" required>
+                                    <small class="form-text text-muted">Number of competitors within 1 mile</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="lease_price" class="form-label">Monthly Lease Price*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="lease_price" name="Lease Price" min="0" required>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Market Presence -->
-                    <div class="section-title">
-                        <span class="section-number">3</span>
-                        Market Presence
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group mb-3">
-                                <label for="review_rating" class="form-label">Review Rating*</label>
-                                <input type="number" step="0.1" min="0" max="5" class="form-control" id="review_rating" name="Review Rating" required>
-                                <small class="form-text text-muted">Out of 5 stars</small>
-                            </div>
+                        <!-- Expansion Status -->
+                        <div class="section-title">
+                            <span class="section-number">5</span>
+                            Expansion Status
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group mb-3">
-                                <label for="review_count" class="form-label">Number of Reviews*</label>
-                                <input type="number" class="form-control" id="review_count" name="Number of Reviews" min="0" required>
-                            </div>
+                        <div class="form-group mb-4">
+                            <select class="form-select" id="expansion_status" name="Expansion Status" required>
+                                <option value="">Select your expansion status...</option>
+                                <option value="0">Want to expand</option>
+                                <option value="1">Started to Expand</option>
+                            </select>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group mb-3">
-                                <label for="social_media" class="form-label">Social Media Followers*</label>
-                                <input type="number" class="form-control" id="social_media" name="Social Media Followers" min="0" required>
-                            </div>
-                        </div>
-                    </div>
+                        <!-- <div class="form-group mb-4">
+                            <select class="form-select" id="expansion_status" name="Expansion Status" required>
+                                <option value="">Select your expansion status...</option>
+                                <option value="0">Planning Phase</option>
+                                <option value="1">Ready to Expand</option>
+                                <option value="2">Expansion in Progress</option>
+                                <option value="3">Multiple Locations</option>
+                            </select>
+                        </div> -->
 
-                    <!-- Market Analysis -->
-                    <div class="section-title">
-                        <span class="section-number">4</span>
-                        Market Analysis
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group mb-3">
-                                <label for="competitor_density" class="form-label">Competitor Density*</label>
-                                <input type="number" class="form-control" id="competitor_density" name="Competitor Density" min="0" required>
-                                <small class="form-text text-muted">Number of competitors within 1 mile</small>
-                            </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-dark btn-lg">Submit Application</button>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group mb-3">
-                                <label for="lease_price" class="form-label">Monthly Lease Price*</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" id="lease_price" name="Lease Price" min="0" required>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Expansion Status -->
-                    <div class="section-title">
-                        <span class="section-number">5</span>
-                        Expansion Status
-                    </div>
-                    <div class="form-group mb-4">
-                        <select class="form-select" id="expansion_status" name="Expansion Status" required>
-                            <option value="">Select your expansion status...</option>
-                            <option value="0">Want to expand</option>
-                            <option value="1">Started to Expand</option>
-                        </select>
-                    </div>
-                    <!-- <div class="form-group mb-4">
-                        <select class="form-select" id="expansion_status" name="Expansion Status" required>
-                            <option value="">Select your expansion status...</option>
-                            <option value="0">Planning Phase</option>
-                            <option value="1">Ready to Expand</option>
-                            <option value="2">Expansion in Progress</option>
-                            <option value="3">Multiple Locations</option>
-                        </select>
-                    </div> -->
-
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-dark btn-lg">Submit Application</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
