@@ -40,12 +40,17 @@ class Database:
 
     def init_db(self):
         self.connect()
+        # Drop the existing table if it exists
+        self.cursor.execute("DROP TABLE IF EXISTS users")
+        self.conn.commit()
+        
+        # Create the table with larger column sizes
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
-                username VARCHAR(80) UNIQUE NOT NULL,
-                email VARCHAR(120) UNIQUE NOT NULL,
-                password_hash VARCHAR(120) NOT NULL
+                username VARCHAR(255) UNIQUE NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(512) NOT NULL
             )
         """)
         self.conn.commit()
