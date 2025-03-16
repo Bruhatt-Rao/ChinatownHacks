@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, make_response
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
@@ -9,17 +8,18 @@ from twelvelabs import TwelveLabs
 import requests
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from database import Database
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(16)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024  # 64MB max file size
 app.config['MAX_CONTENT_PATH'] = None
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'mp4', 'mov', 'avi'}
 
-db = SQLAlchemy(app)
+# Initialize database with connection string if available
+db = Database("postgresql://neondb_owner:npg_UkJXC78uynDd@ep-rapid-glitter-a5o753p5-pooler.us-east-2.aws.neon.tech/neondb")
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
@@ -29,15 +29,17 @@ GOOGLE_PLACES_API_KEY = os.getenv('GOOGLE_PLACES_API_KEY')
 # Create uploads directory if it doesn't exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(120), nullable=False)
+class User(UserMixin):
+    def __init__(self, user_data):
+        self.id = user_data['id']
+        self.username = user_data['username']
+        self.email = user_data['email']
+        self.password_hash = user_data['password_hash']
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    user_data = db.get_user_by_id(user_id)
+    return User(user_data) if user_data else None
 
 @app.route('/')
 def home():
@@ -94,8 +96,11 @@ def login():
         return redirect(url_for('home'))
     
     if request.method == 'POST':
-        user = User.query.filter_by(username=request.form.get('username')).first()
-        if user and check_password_hash(user.password_hash, request.form.get('password')):
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user_data = db.verify_password(username, password)
+        if user_data:
+            user = User(user_data)
             login_user(user)
             return redirect(url_for('home'))
         flash('Invalid username or password')
@@ -111,24 +116,21 @@ def signup():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        if User.query.filter_by(username=username).first():
+        if db.get_user_by_username(username):
             flash('Username already exists')
             return redirect(url_for('signup'))
         
-        if User.query.filter_by(email=email).first():
+        if db.get_user_by_email(email):
             flash('Email already registered')
             return redirect(url_for('signup'))
         
-        new_user = User(
-            username=username,
-            email=email,
-            password_hash=generate_password_hash(password)
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        
-        flash('Registration successful! Please login.')
-        return redirect(url_for('login'))
+        user_id = db.create_user(username, email, password)
+        if user_id:
+            flash('Registration successful! Please login.')
+            return redirect(url_for('login'))
+        else:
+            flash('Error creating user')
+            return redirect(url_for('signup'))
     
     return render_template('signup.html')
 
@@ -293,17 +295,6 @@ def after_request(response):
     return response
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        
-        if not User.query.first():
-            default_user = User(
-                username="admin",
-                email="admin@example.com",
-                password_hash=generate_password_hash("password123")
-            )
-            db.session.add(default_user)
-            db.session.commit()
-            
+    db.init_db()
     print(f"Upload folder is set to: {app.config['UPLOAD_FOLDER']}")  # Debug print
     app.run(debug=True, port=8080) 
