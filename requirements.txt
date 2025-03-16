@@ -12,4 +12,6 @@ python-dotenv
 twelvelabs
 requests
 httpx
+psycopg2-binary==2.9.9
+gunicorn==21.2.0
 pysqlite3-binary==0.5.2 
