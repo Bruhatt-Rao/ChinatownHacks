@@ -11,4 +11,5 @@ email-validator==2.1.0.post1
 python-dotenv
 twelvelabs
 requests
-httpx 
+httpx
+pysqlite3-binary==0.5.2 
