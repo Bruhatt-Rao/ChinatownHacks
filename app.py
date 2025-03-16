@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from database import Database
 
-app = Flask(__name__)
+app = Flask( __name__ )
 app.config['SECRET_KEY'] = secrets.token_hex(16)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024  # 64MB max file size
