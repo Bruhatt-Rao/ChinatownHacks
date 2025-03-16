@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Result{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="result-card">
+                <h2 class="text-center mb-4">Market Demand Analysis</h2>
+                <div class="result-content">
+                    <h3>{{ restaurant_name }}</h3>
+                    <div class="score-display">
+                        <div class="score-label">Market Demand Score</div>
+                        <div class="score-value">{{ score }}</div>
+                        <div class="score-scale">Scale: 0-10</div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a href="{{ url_for('apply_restaurant') }}" class="btn btn-dark">Submit Another Application</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .result-card {
+        background: white;
+        padding: 3rem;
+        border-radius: 15px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        margin: 3rem 0;
+        border: 1px solid #ddd;
+    }
+
+    .result-content {
+        text-align: center;
+    }
+
+    .score-display {
+        margin: 2rem 0;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .score-label {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .score-value {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #333;
+        margin: 1rem 0;
+    }
+
+    .score-scale {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    h3 {
+        color: #333;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %} 

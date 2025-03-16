@@ -1,6 +1,7 @@
 import json
 import pandas as pd
 import joblib
+import os
 
 # Define required features at module level
 REQUIRED_FEATURES = [
@@ -18,12 +19,15 @@ REQUIRED_FEATURES = [
 def load_model():
     """Load the trained model and scaler."""
     try:
-        model = joblib.load("chinatown_business_model.pkl")
-        scaler = joblib.load("scaler.pkl")
-        with open('feature_columns.json', 'r') as f:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        model = joblib.load(os.path.join(current_dir, "chinatown_business_model.pkl"))
+        scaler = joblib.load(os.path.join(current_dir, "scaler.pkl"))
+        with open(os.path.join(current_dir, 'feature_columns.json'), 'r') as f:
             feature_columns = json.load(f)
         return model, scaler, feature_columns
     except FileNotFoundError as e:
+        print(f"Error: {e}")
+        print(f"Looking in directory: {current_dir}")
         raise Exception("Model files not found. Please run train.py first.") from e
 
 def predict_from_json(json_data):
@@ -93,6 +97,35 @@ def validate_input(json_data):
         
     if not isinstance(json_data['Lease Price'], (int, float)) or json_data['Lease Price'] < 0:
         raise ValueError("Lease Price must be a non-negative number")
+
+def predict_from_dict(data):
+    print("Received data:", data)
+    print("Data types:")
+    for key, value in data.items():
+        print(f"{key}: {type(value)} = {value}")
+    
+    # Convert string values to appropriate numeric types
+    numeric_fields = {
+        'Years in Business': int,
+        'Annual Revenue (3 Years Ago)': float,
+        'Annual Revenue (2 Years Ago)': float,
+        'Annual Revenue (Last Year)': float,
+        'Review Rating': float,
+        'Number of Reviews': int,
+        'Social Media Followers': int,
+        'Competitor Density': int,
+        'Lease Price': float
+    }
+    
+    for field, convert_type in numeric_fields.items():
+        if field in data and isinstance(data[field], str):
+            try:
+                data[field] = convert_type(data[field])
+            except ValueError:
+                raise ValueError(f"Invalid value for {field}: {data[field]}")
+    
+    validate_input(data)
+    return predict_from_json(data)['market_demand_score']
 
 if __name__ == "__main__":
     try:

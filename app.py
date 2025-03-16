@@ -4,6 +4,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import secrets
+import classifier.run as run
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(16)
@@ -27,6 +28,49 @@ def load_user(user_id):
 @app.route('/')
 def home():
     return render_template('home.html')
+
+@app.route('/applied', methods=['GET', 'POST'])
+def applied():
+    if request.method == 'POST':
+        try:
+            data = dict(request.form)
+            name = data.pop("restaurant_name")
+            
+            # Convert numeric fields to appropriate types
+            numeric_fields = {
+                'Years in Business': int,
+                'Annual Revenue (3 Years Ago)': float,
+                'Annual Revenue (2 Years Ago)': float,
+                'Annual Revenue (Last Year)': float,
+                'Review Rating': float,
+                'Number of Reviews': int,
+                'Social Media Followers': int,
+                'Competitor Density': int,
+                'Lease Price': float
+            }
+            
+            # Convert string values to numbers
+            for field, convert_type in numeric_fields.items():
+                if field in data:
+                    try:
+                        data[field] = convert_type(data[field])
+                    except ValueError:
+                        flash(f'Invalid value for {field}. Please enter a valid number.')
+                        return redirect(url_for('apply_restaurant'))
+            
+            score = run.predict_from_dict(data)
+            return render_template('prediction_result.html', 
+                                restaurant_name=name, 
+                                score=score)
+        except ValueError as e:
+            flash(str(e))
+            return redirect(url_for('apply_restaurant'))
+        except Exception as e:
+            flash('An error occurred while processing your application.')
+            return redirect(url_for('apply_restaurant'))
+
+    if request.method == 'GET':
+        return render_template('apply_now.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
