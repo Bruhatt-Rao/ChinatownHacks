@@ -17,7 +17,7 @@ app.config['MAX_CONTENT_PATH'] = None
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'mp4', 'mov', 'avi'}
 
 # Initialize database with connection string if available
-db = Database("postgresql://neondb_owner:npg_UkJXC78uynDd@ep-rapid-glitter-a5o753p5-pooler.us-east-2.aws.neon.tech/neondb")
+db = Database(os.getenv('DATABASE_URL'))
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
