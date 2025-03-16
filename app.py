@@ -12,15 +12,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(16)
-
-# Database configuration
-if os.environ.get('VERCEL_ENV') == 'production':
-    # Use PostgreSQL in production (Vercel)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '').replace('postgres://', 'postgresql://')
-else:
-    # Use SQLite in development
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024  # 64MB max file size
